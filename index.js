@@ -14,10 +14,11 @@ let firestore;
 const saveSourceCodeStep = async (req, res) => {
   try {
     const websiteId = req.query.websiteId;
+    const type = req.body.type;
     const filename = req.body.filename;
     const sourceCode = req.body.sourceCode;
     storage = getStorage(storage);
-    await saveSourceCode(storage, websiteId, filename, 'page', sourceCode);
+    await saveSourceCode(storage, websiteId, filename, type, sourceCode);
     res.status(204);  // send NO CONTENT
     res.end();
   } catch (error) {
@@ -30,10 +31,14 @@ const saveSourceCodeStep = async (req, res) => {
 const saveStyleStep = async (req, res) => {
   try {
     const websiteId = req.query.websiteId;
-    const filename = req.body.filename;
-    const style = req.body.style;
-    firestore = getFirestore(firestore);
-    await saveStyle(firestore, websiteId, filename, style);
+    const type = req.body.type;
+    if (type==='page') {
+      // only for page type
+      const filename = req.body.filename;
+      const style = req.body.style;
+      firestore = getFirestore(firestore);
+      await saveStyle(firestore, websiteId, filename, style);
+    }
     await saveSourceCodeStep(req, res);
   } catch (error) {
     console.error(error);
